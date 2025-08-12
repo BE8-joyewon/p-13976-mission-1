@@ -42,7 +42,7 @@ object TestRunner {
         val input = (1..size)
             .joinToString("\n") { i ->
                 "등록\n명언$i\n작가$i\n"
-            }
+            } + "종료\n"
 
         run(input)
     }

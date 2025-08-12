@@ -5,24 +5,39 @@ import org.example.domain.wiseSaying.service.WiseSayingService
 class WiseSayingController {
     private val wiseSayingService = WiseSayingService()
 
-    fun actionWrite(params: Map<String, String>) {
+    fun actionWrite() {
         print("명언: ")
         val content = readlnOrNull()?.trim() ?: ""
         print("작가: ")
         val author = readlnOrNull()?.trim() ?: ""
 
         val wiseSaying = wiseSayingService.write(content, author)
-
         println("${wiseSaying.id}번 명언이 등록되었습니다.")
     }
 
     fun actionList(params: Map<String, String>) {
+        val keywordType = params["keywordType"] ?: "all"
+        val keyword = params["keyword"] ?: ""
+        val pageSize = params["pageSize"]?.toIntOrNull() ?: 5
+        val page = params["page"]?.toIntOrNull() ?: 1
+
+        val pageWiseSayings = wiseSayingService.findByKeywordPaged(keywordType, keyword, pageSize, page)
+
+        if (keywordType != "all") {
+            println("----------------------")
+            println("검색타입 : $keywordType")
+            println("검색어 : $keyword")
+            println("----------------------")
+        }
         println("번호 / 작가 / 명언")
         println("----------------------")
-
-        wiseSayingService.getAll().sortedByDescending { it.id }.forEach {
-            wiseSaying -> println("${wiseSaying.id} / ${wiseSaying.author} / ${wiseSaying.content}")
+        for (wiseSaying in pageWiseSayings.content) {
+            println("${wiseSaying.id} / ${wiseSaying.author} / ${wiseSaying.content}")
         }
+        println("----------------------")
+        val pageDisplay = (1..pageWiseSayings.totalPages)
+            .joinToString(" / ") { if (it == page) "[$it]" else it.toString() }
+        println("페이지 : $pageDisplay")
     }
 
     fun actionDelete(params: Map<String, String>) {
@@ -66,10 +81,8 @@ class WiseSayingController {
         println("${id}번 명언이 수정되었습니다.")
     }
 
-    fun actionBuild(params: Map<String, String>) {
-
-        // TODO: 데이터 파일을 갱신합니다.
-
+    fun actionBuild() {
+        wiseSayingService.build()
         println("data.json 파일의 내용이 갱신되었습니다.")
     }
 }

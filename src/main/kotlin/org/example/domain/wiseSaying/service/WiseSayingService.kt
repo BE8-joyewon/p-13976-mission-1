@@ -1,5 +1,6 @@
 package org.example.domain.wiseSaying.service
 
+import org.example.common.dto.Page
 import org.example.domain.wiseSaying.entity.WiseSaying
 import org.example.domain.wiseSaying.repository.WiseSayingRepository
 
@@ -10,10 +11,6 @@ class WiseSayingService {
         return wiseSayingRepository.save(
             WiseSaying(content, author)
         )
-    }
-
-    fun getAll(): List<WiseSaying> {
-        return wiseSayingRepository.getAll()
     }
 
     fun findById(id: Int): WiseSaying? {
@@ -30,5 +27,23 @@ class WiseSayingService {
             this.author = author
         }
         return wiseSayingRepository.save(wiseSaying)
+    }
+
+    fun build() {
+        wiseSayingRepository.build()
+    }
+
+    fun findByKeywordPaged(
+        keywordType: String,
+        keyword: String,
+        pageSize: Int,
+        pageNumber: Int
+    ): Page<WiseSaying> {
+        return wiseSayingRepository.findByKeywordPaged(
+            keywordType,
+            keyword,
+            pageSize,
+            pageNumber
+        )
     }
 }
